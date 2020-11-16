@@ -1,0 +1,232 @@
+openapi: 3.0.2
+info:
+  title: Crud API
+  description: Rest API
+  termsOfService: 'http://www.example.com'
+  contact:
+    name: Manteiner
+    email: manteiner@example.com
+  version: 1.0.0
+servers:
+  - url: '{protocol}://{server}:{port}/{basePath}'
+    variables:
+      protocol:
+        default: http
+        enum:
+          - http
+          - https
+      server:
+        default: localhost
+        enum:
+          - localhost
+          - dev.com
+          - staging.com
+          - prod.com
+      port:
+        default: '8080'
+      basePath:
+        default: 'v1'
+
+tags:
+  - name: public
+    description: no auth needed
+  - name: private
+    description: auth needed
+
+paths:
+  /example:
+    get:
+      summary: Get all examples
+      description: Get all examples
+      operationId: getExampleList
+      tags:
+        - example
+        - private
+      responses:
+        '200':
+          description: Example list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleListResponse'
+          x-examples:
+            - summary: 'Example list'
+              description: 'Example list'
+              value:
+                - id: "d7cd23b8-991c-470f-ac63-d8fb106f391e"
+                - description: "Lorem ipsum"
+        '500':
+          description: Error - Internal Server Error
+    post:
+      summary: Add example
+      description: Add example
+      operationId: addExample
+      tags:
+        - example
+        - private
+      requestBody:
+        description: example
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Example'
+      responses:
+        '201':
+          description: Creation success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleResponse'
+          x-examples:
+            - summary: 'Example created'
+              description: 'Example created'
+              value:
+                - id: "d7cd23b8-991c-470f-ac63-d8fb106f391e"
+                - description: "Lorem ipsum"
+        '500':
+          description: Error - Internal Server Error
+
+  /example/{id}:
+    get:
+      summary: Get an example
+      description: Get an example by id
+      operationId: getExample
+      tags:
+        - example
+        - private
+      parameters:
+        - name: id
+          in: path
+          description: Id of the example to search
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Example
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleResponse'
+          x-examples:
+            - summary: 'Example'
+              description: 'Example'
+              value:
+                - id: "d7cd23b8-991c-470f-ac63-d8fb106f391e"
+                - description: "Lorem ipsum"
+        '500':
+          description: Error - Internal Server Error
+        '400':
+          description: Example not valid
+        '404':
+          description: Example not found
+    put:
+      summary: Update an example
+      description: Update an example by id
+      operationId: updateExample
+      tags:
+        - example
+        - private
+      parameters:
+        - name: id
+          in: path
+          description: Id of the example to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: example
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Example'
+      responses:
+        '204':
+          description: Update success
+        '500':
+          description: Error - Internal Server Error
+        '400':
+          description: Example not valid
+        '404':
+          description: Example not found
+    delete:
+      summary: Delete example
+      description: Delete example
+      operationId: deleteExample
+      tags:
+        - example
+        - private
+      parameters:
+        - name: id
+          in: path
+          description: Id of the example to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Deleted success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExampleResponse'
+          x-examples:
+            - summary: 'Example deleted'
+              description: 'Example deleted'
+              value:
+                - id: "d7cd23b8-991c-470f-ac63-d8fb106f391e"
+                - description: "Lorem ipsum"
+        '500':
+          description: Error - Internal Server Error
+        '400':
+          description: Example not valid
+        '404':
+          description: Example not valid
+
+components:
+
+  requestBodies:
+    ExampleRequest:
+      description: Example request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Example'
+
+  schemas:
+
+    ExampleListResponse:
+      x-api-response: true
+      type: object
+      properties:
+        data: #unica property chiamata data, all'interno ci sarà il riferimento al DTO di risposta
+          type: array
+          items:
+            $ref: '#/components/schemas/Example'
+
+    ExampleResponse:
+      x-api-response: true
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Example'
+
+    Example:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        description:
+          type: string
+          nullable: true
+
+  links: {}
+  callbacks: {}
